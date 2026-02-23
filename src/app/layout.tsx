@@ -1,27 +1,26 @@
-import React from 'react'
-import { SessionProvider } from 'next-auth/react'
-import type { Metadata } from 'next'
-import './globals.css'
-import Navbar from '@/components/navbar'
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import Navbar from "@/components/navbar";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Healthcare Professional Platform',
-  description: 'Professional networking and learning management for healthcare professionals',
-}
+  title: "Healthcare Platform - Professional Networking & Learning",
+  description: "Connect, learn, and grow with healthcare professionals worldwide",
+};
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en">
-      <body>
-        <SessionProvider>
-          <Navbar />
-          {children}
-        </SessionProvider>
+      <body className={inter.className}>
+        <Navbar />
+        {children}
       </body>
     </html>
-  )
+  );
 }
