@@ -1,1 +1,28 @@
-{"name":"med","version":"1.0.0","private":true,"scripts":{"dev":"next dev","build":"next build","start":"next start","lint":"next lint"},"dependencies":{"next":"^16.1.6","react":"^19.0.0-rc-66855b96-20241106","react-dom":"^19.0.0-rc-66855b96-20241106","next-auth":"^5.0.0-beta.20","@prisma/client":"^5.20.0"},"devDependencies":{"typescript":"^5.7.2","@types/node":"^20.15.1","@types/react":"^19.0.0-rc.0","@types/react-dom":"^19.0.0-rc.0","tailwindcss":"^3.4.15","postcss":"^8.4.47","autoprefixer":"^10.4.20","prisma":"^5.20.0"}}
+{
+  "name": "med",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^16.1.6",
+    "react": "^19.0.0-rc-66855b96-20241106",
+    "react-dom": "^19.0.0-rc-66855b96-20241106",
+    "next-auth": "^5.0.0-beta.20",
+    "@prisma/client": "^5.20.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "@types/node": "^20.15.1",
+    "@types/react": "^19.0.0-rc.0",
+    "@types/react-dom": "^19.0.0-rc.0",
+    "tailwindcss": "^3.4.15",
+    "postcss": "^8.4.47",
+    "autoprefixer": "^10.4.20",
+    "prisma": "^5.20.0"
+  }
+}
