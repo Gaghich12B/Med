@@ -27,7 +27,9 @@ model User {
   connectedTo   Connection[] @relation("ConnectedUsers")
   posts         Post[]
   comments      Comment[]
-  messages      Message[]
+  reviews       Review[]
+  sentMessages  Message[]    @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 }
 
 enum Role {
@@ -223,6 +225,7 @@ model Review {
   createdAt   DateTime @default(now())
   
   course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model CourseLocation {
@@ -294,6 +297,7 @@ model Comment {
   createdAt DateTime @default(now())
   
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Message {
@@ -304,7 +308,8 @@ model Message {
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
   
-  sender   User @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  sender   User @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("ReceivedMessages", fields: [receiverId], references: [id], onDelete: Cascade)
 }
 
 model Article {
