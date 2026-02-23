@@ -28,6 +28,11 @@ export default async function CourseDetailPage({ params }: { params: { id: strin
             email: session.user.email
           }
         } : undefined
+      },
+      _count: {
+        select: {
+          enrollments: true
+        }
       }
     }
   });

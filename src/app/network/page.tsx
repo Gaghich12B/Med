@@ -103,7 +103,7 @@ export default async function NetworkPage({
               <option value="">All Roles</option>
               {roles.map(role => (
                 <option key={role} value={role}>
-                  {role.replace('_', ' ')}
+                  {role.replaceAll('_', ' ')}
                 </option>
               ))}
             </select>
@@ -122,7 +122,7 @@ export default async function NetworkPage({
                   <div className="flex-1 min-w-0">
                     <CardTitle className="text-lg truncate">{user.name || 'Healthcare Professional'}</CardTitle>
                     <p className="text-sm text-gray-600 truncate">
-                      {user.role.replace('_', ' ')}
+                      {user.role.replaceAll('_', ' ')}
                     </p>
                     {user.specialty && (
                       <Badge variant="secondary" className="mt-1">

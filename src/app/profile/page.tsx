@@ -66,7 +66,7 @@ export default async function ProfilePage() {
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-gray-900">{user.name || 'Healthcare Professional'}</h1>
                 <p className="text-gray-600 mt-1">
-                  {profile?.title || ''} • {user.role.replace('_', ' ')}
+                  {profile?.title || ''} • {user.role.replaceAll('_', ' ')}
                 </p>
                 {user.specialty && (
                   <Badge variant="secondary" className="mt-2">

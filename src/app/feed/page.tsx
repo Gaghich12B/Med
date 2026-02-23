@@ -56,6 +56,13 @@ export default async function FeedPage() {
         gte: new Date()
       }
     },
+    include: {
+      courseLocation: {
+        include: {
+          course: true
+        }
+      }
+    },
     orderBy: {
       startDate: 'asc'
     },
@@ -202,7 +209,7 @@ export default async function FeedPage() {
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm truncate">{user.name || 'User'}</p>
                         <p className="text-xs text-gray-600 truncate">
-                          {user.role.replace('_', ' ')}
+                          {user.role.replaceAll('_', ' ')}
                         </p>
                       </div>
                       <Button size="sm" variant="outline">
