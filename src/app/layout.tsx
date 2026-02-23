@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/navbar";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Healthcare Platform - Professional Networking & Learning",
-  description: "Connect, learn, and grow with healthcare professionals worldwide",
+  title: "Healthcare Pro Network - Connect, Learn, Grow",
+  description: "Professional networking and continuing education platform for healthcare professionals",
 };
 
 export default function RootLayout({
@@ -18,8 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Navbar />
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
