@@ -1,24 +1,27 @@
-import React from 'react';
-import { SessionProvider } from 'your-session-library'; // Adjust the import based on your session library
-import './globals.css'; // Import your global styles
+import React from 'react'
+import { SessionProvider } from 'next-auth/react'
+import type { Metadata } from 'next'
+import './globals.css'
+import Navbar from '@/components/navbar'
 
-export const metadata = {
-  title: 'Your Page Title',
-  description: 'Your Page Description',
-};
+export const metadata: Metadata = {
+  title: 'Healthcare Professional Platform',
+  description: 'Professional networking and learning management for healthcare professionals',
+}
 
-const Layout = ({ children }) => {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <SessionProvider>
-      <html lang="en">
-      <head>
-        <title>{metadata.title}</title>
-        <meta name="description" content={metadata.description} />
-      </head>
-      <body>{children}</body>
-      </html>
-    </SessionProvider>
-  );
-};
-
-export default Layout;
+    <html lang="en">
+      <body>
+        <SessionProvider>
+          <Navbar />
+          {children}
+        </SessionProvider>
+      </body>
+    </html>
+  )
+}
