@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,6 +11,43 @@ import Link from 'next/link';
 import { Stethoscope } from 'lucide-react';
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'NURSE',
+    specialty: '',
+    location: '',
+  });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+    setLoading(false);
+
+    if (!res.ok) {
+      setError(data.error || 'Registration failed');
+    } else {
+      router.push('/auth/signin');
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -20,7 +61,7 @@ export default function SignUpPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form action="/api/auth/register" method="POST">
+          <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div>
                 <Label htmlFor="name">Full Name</Label>
@@ -30,6 +71,8 @@ export default function SignUpPage() {
                   type="text"
                   placeholder="John Doe"
                   required
+                  value={form.name}
+                  onChange={handleChange}
                 />
               </div>
               <div>
@@ -40,6 +83,8 @@ export default function SignUpPage() {
                   type="email"
                   placeholder="you@example.com"
                   required
+                  value={form.email}
+                  onChange={handleChange}
                 />
               </div>
               <div>
@@ -51,11 +96,16 @@ export default function SignUpPage() {
                   placeholder="••••••••"
                   required
                   minLength={8}
+                  value={form.password}
+                  onChange={handleChange}
                 />
               </div>
               <div>
                 <Label htmlFor="role">Role</Label>
-                <Select name="role" required>
+                <Select
+                  value={form.role}
+                  onValueChange={(value) => setForm(prev => ({ ...prev, role: value }))}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select your role" />
                   </SelectTrigger>
@@ -74,6 +124,8 @@ export default function SignUpPage() {
                   name="specialty"
                   type="text"
                   placeholder="e.g., Critical Care, Family Medicine"
+                  value={form.specialty}
+                  onChange={handleChange}
                 />
               </div>
               <div>
@@ -83,10 +135,15 @@ export default function SignUpPage() {
                   name="location"
                   type="text"
                   placeholder="e.g., San Francisco, CA"
+                  value={form.location}
+                  onChange={handleChange}
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Create Account
+              {error && (
+                <p className="text-sm text-red-600">{error}</p>
+              )}
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Creating account...' : 'Create Account'}
               </Button>
             </div>
           </form>
@@ -101,3 +158,4 @@ export default function SignUpPage() {
     </div>
   );
 }
+

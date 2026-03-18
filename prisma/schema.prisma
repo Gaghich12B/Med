@@ -12,7 +12,7 @@ model User {
   email         String    @unique
   password      String
   name          String?
-  role          Role      @default(NURSE)
+  role          String    @default("NURSE")
   specialty     String?
   location      String?
   createdAt     DateTime  @default(now())
@@ -30,14 +30,6 @@ model User {
   reviews       Review[]
   sentMessages  Message[]    @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
-}
-
-enum Role {
-  NURSE
-  NURSE_PRACTITIONER
-  PHYSICIAN_ASSISTANT
-  PHYSICIAN
-  ADMIN
 }
 
 model Account {
@@ -199,6 +191,7 @@ model Enrollment {
   
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   course  Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonProgress LessonProgress[]
   
   @@unique([userId, courseId])
 }
@@ -262,19 +255,13 @@ model Connection {
   id          String   @id @default(cuid())
   userId      String
   connectedId String
-  status      ConnectionStatus @default(PENDING)
+  status      String   @default("PENDING")
   createdAt   DateTime @default(now())
   
   user        User @relation("UserConnections", fields: [userId], references: [id], onDelete: Cascade)
   connectedUser User @relation("ConnectedUsers", fields: [connectedId], references: [id], onDelete: Cascade)
   
   @@unique([userId, connectedId])
-}
-
-enum ConnectionStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
 }
 
 model Post {

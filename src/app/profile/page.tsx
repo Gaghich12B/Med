@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -141,7 +143,7 @@ export default async function ProfilePage() {
                 <CardTitle>Work Experience</CardTitle>
               </CardHeader>
               <CardContent>
-                {profile?.experience.length === 0 ? (
+                {!profile || profile.experience.length === 0 ? (
                   <p className="text-gray-500">No experience information provided.</p>
                 ) : (
                   <div className="space-y-6">
@@ -179,7 +181,7 @@ export default async function ProfilePage() {
                 <CardTitle>Education</CardTitle>
               </CardHeader>
               <CardContent>
-                {profile?.education.length === 0 ? (
+                {!profile || profile.education.length === 0 ? (
                   <p className="text-gray-500">No education information provided.</p>
                 ) : (
                   <div className="space-y-4">
@@ -212,7 +214,7 @@ export default async function ProfilePage() {
                 <CardTitle>Skills</CardTitle>
               </CardHeader>
               <CardContent>
-                {profile?.skills.length === 0 ? (
+                {!profile || profile.skills.length === 0 ? (
                   <p className="text-gray-500">No skills information provided.</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
