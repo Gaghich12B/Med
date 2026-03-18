@@ -55,14 +55,31 @@ export async function POST(request: Request) {
       );
     }
 
+    const parsedIssueDate = new Date(issueDate);
+    const parsedExpirationDate = new Date(expirationDate);
+
+    if (isNaN(parsedIssueDate.getTime()) || isNaN(parsedExpirationDate.getTime())) {
+      return NextResponse.json(
+        { error: 'issueDate and expirationDate must be valid dates' },
+        { status: 400 }
+      );
+    }
+
+    if (parsedExpirationDate <= parsedIssueDate) {
+      return NextResponse.json(
+        { error: 'expirationDate must be after issueDate' },
+        { status: 400 }
+      );
+    }
+
     const certification = await prisma.certification.create({
       data: {
         userId: user.id,
         name,
         issuer,
         credentialNumber: credentialNumber ?? null,
-        issueDate: new Date(issueDate),
-        expirationDate: new Date(expirationDate),
+        issueDate: parsedIssueDate,
+        expirationDate: parsedExpirationDate,
         ceCredits: ceCredits ?? null,
       },
     });
