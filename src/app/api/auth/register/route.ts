@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma"
 import { Prisma } from "@prisma/client"
 import bcrypt from "bcryptjs"
 
+const PRISMA_UNIQUE_CONSTRAINT_VIOLATION = "P2002"
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -69,7 +71,7 @@ export async function POST(request: Request) {
     }
 
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2002") {
+      if (error.code === PRISMA_UNIQUE_CONSTRAINT_VIOLATION) {
         return NextResponse.json(
           { error: "An account with this email already exists." },
           { status: 400 }
