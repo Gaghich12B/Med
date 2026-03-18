@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { Prisma } from "@prisma/client"
 import bcrypt from "bcryptjs"
 
 export async function POST(request: Request) {
@@ -59,6 +60,23 @@ export async function POST(request: Request) {
     )
   } catch (error) {
     console.error("Registration error:", error)
+
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      return NextResponse.json(
+        { error: "Unable to connect to the database. Please try again later." },
+        { status: 503 }
+      )
+    }
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        return NextResponse.json(
+          { error: "An account with this email already exists." },
+          { status: 400 }
+        )
+      }
+    }
+
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 }
