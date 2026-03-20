@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Clock, BookOpen, Award, User, ArrowLeft, PlayCircle } from "lucide-react"
 import { SignOutButton } from "@/components/sign-out-button"
+import { EnrollButton } from "@/components/enroll-button"
 
 export default async function CourseDetailPage({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
@@ -244,11 +245,7 @@ export default async function CourseDetailPage({ params }: { params: { id: strin
                       </p>
                       <p className="text-sm text-gray-600">One-time payment</p>
                     </div>
-                    <form action={`/api/courses/${course.id}/enroll`} method="POST">
-                      <Button type="submit" className="w-full" size="lg">
-                        Enroll Now
-                      </Button>
-                    </form>
+                    <EnrollButton courseId={course.id} />
                     <p className="text-xs text-center text-gray-600">
                       Full lifetime access
                     </p>

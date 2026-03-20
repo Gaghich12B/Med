@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
+import { Prisma } from "@prisma/client"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as any,
@@ -18,34 +19,44 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid credentials")
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email
-          },
-          include: {
-            profile: true
+        try {
+          const user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email
+            },
+            include: {
+              profile: true
+            }
+          })
+
+          if (!user || !user.password) {
+            throw new Error("Invalid credentials")
           }
-        })
 
-        if (!user || !user.password) {
-          throw new Error("Invalid credentials")
-        }
+          const isCorrectPassword = await bcrypt.compare(
+            credentials.password,
+            user.password
+          )
 
-        const isCorrectPassword = await bcrypt.compare(
-          credentials.password,
-          user.password
-        )
+          if (!isCorrectPassword) {
+            throw new Error("Invalid credentials")
+          }
 
-        if (!isCorrectPassword) {
-          throw new Error("Invalid credentials")
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          image: user.image
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            image: user.image
+          }
+        } catch (error) {
+          if (
+            error instanceof Prisma.PrismaClientInitializationError ||
+            error instanceof Prisma.PrismaClientKnownRequestError
+          ) {
+            throw new Error("Service temporarily unavailable")
+          }
+          throw error
         }
       }
     })

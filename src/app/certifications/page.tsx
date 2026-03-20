@@ -5,17 +5,14 @@ import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { SignOutButton } from "@/components/sign-out-button"
+import { AddCertificationDialog } from "@/components/add-certification-dialog"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { 
   Award, 
   AlertCircle, 
   Calendar, 
   FileText, 
-  Plus,
   CheckCircle,
   Clock
 } from "lucide-react"
@@ -83,53 +80,7 @@ export default async function CertificationsPage() {
               Track and manage your professional certifications
             </p>
           </div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                Add Certification
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Certification</DialogTitle>
-                <DialogDescription>
-                  Enter the details of your certification
-                </DialogDescription>
-              </DialogHeader>
-              <form className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Certification Name</Label>
-                  <Input id="name" placeholder="e.g., ACLS, BLS, CCRN" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="issuer">Issuing Organization</Label>
-                  <Input id="issuer" placeholder="e.g., American Heart Association" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="credentialNumber">Credential Number</Label>
-                  <Input id="credentialNumber" placeholder="e.g., CCRN-123456" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="issueDate">Issue Date</Label>
-                    <Input id="issueDate" type="date" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="expirationDate">Expiration Date</Label>
-                    <Input id="expirationDate" type="date" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="ceCredits">CE Credits</Label>
-                  <Input id="ceCredits" type="number" placeholder="0" />
-                </div>
-                <Button type="submit" className="w-full">
-                  Add Certification
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <AddCertificationDialog />
         </div>
 
         {/* Alerts */}
@@ -334,32 +285,7 @@ export default async function CertificationsPage() {
                 <Award className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">No certifications yet</h3>
                 <p className="text-gray-600 mb-4">Add your first certification to start tracking</p>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button>Add Certification</Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Add New Certification</DialogTitle>
-                      <DialogDescription>
-                        Enter the details of your certification
-                      </DialogDescription>
-                    </DialogHeader>
-                    <form className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Certification Name</Label>
-                        <Input id="name" placeholder="e.g., ACLS, BLS, CCRN" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="issuer">Issuing Organization</Label>
-                        <Input id="issuer" placeholder="e.g., American Heart Association" />
-                      </div>
-                      <Button type="submit" className="w-full">
-                        Add Certification
-                      </Button>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                <AddCertificationDialog />
               </CardContent>
             </Card>
           )}

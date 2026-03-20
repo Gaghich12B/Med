@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Input } from "@/components/ui/input"
 import { SignOutButton } from "@/components/sign-out-button"
+import { ConnectButton } from "@/components/connect-button"
 import { 
   Users, 
   Search, 
@@ -41,21 +42,27 @@ export default async function NetworkPage() {
     take: 20
   })
 
-  // Get user's connections
+  // Get user's connections (accepted and pending)
   const connections = await prisma.connection.findMany({
     where: {
       OR: [
         { userId },
         { connectedId: userId }
       ],
-      status: 'ACCEPTED'
     }
   })
 
-  const connectedUserIds = new Set([
-    ...connections.map(c => c.userId),
-    ...connections.map(c => c.connectedId)
-  ])
+  const connectedUserIds = new Set(
+    connections
+      .filter(c => c.status === 'ACCEPTED')
+      .flatMap(c => [c.userId, c.connectedId])
+  )
+
+  const pendingUserIds = new Set(
+    connections
+      .filter(c => c.status === 'PENDING')
+      .flatMap(c => [c.userId, c.connectedId])
+  )
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -144,6 +151,7 @@ export default async function NetworkPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {users.map((user) => {
               const isConnected = connectedUserIds.has(user.id)
+              const isPending = !isConnected && pendingUserIds.has(user.id)
               const profile = user.profile
               
               return (
@@ -186,21 +194,11 @@ export default async function NetworkPage() {
                       </p>
                     )}
                     <div className="flex gap-2 pt-2">
-                      {isConnected ? (
-                        <Button variant="outline" className="flex-1" size="sm">
-                          Connected
-                        </Button>
-                      ) : (
-                        <>
-                          <Button className="flex-1" size="sm">
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            Connect
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <MessageSquare className="h-4 w-4" />
-                          </Button>
-                        </>
-                      )}
+                      <ConnectButton
+                        targetUserId={user.id}
+                        isConnected={isConnected}
+                        isPending={isPending}
+                      />
                     </div>
                   </CardContent>
                 </Card>

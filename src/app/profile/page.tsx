@@ -60,11 +60,23 @@ export default async function ProfilePage() {
     }
   })
 
-  if (!user || !user.profile) {
-    redirect("/dashboard")
+  if (!user) {
+    redirect("/auth/signin")
   }
 
-  const profile = user.profile
+  // Auto-create profile if missing (new users)
+  let profile = user.profile
+  if (!profile) {
+    profile = await prisma.profile.create({
+      data: { userId },
+      include: {
+        education: true,
+        experience: true,
+        skills: true,
+        awards: true,
+      },
+    })
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

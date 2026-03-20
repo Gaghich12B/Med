@@ -29,7 +29,11 @@ export default function SignInPage() {
       })
 
       if (result?.error) {
-        setError("Invalid email or password")
+        setError(
+          result.error === "Service temporarily unavailable"
+            ? "Service temporarily unavailable. Please try again later."
+            : "Invalid email or password"
+        )
       } else {
         router.push("/dashboard")
         router.refresh()
