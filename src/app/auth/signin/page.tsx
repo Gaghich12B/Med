@@ -29,9 +29,14 @@ export default function SignInPage() {
       })
 
       if (result?.error) {
+        const isDbError =
+          result.error === "Service temporarily unavailable" ||
+          result.error === "Database not configured"
         setError(
-          result.error === "Service temporarily unavailable"
-            ? "Service temporarily unavailable. Please try again later."
+          isDbError
+            ? result.error === "Database not configured"
+              ? "Database not configured. Please contact the site administrator."
+              : "Unable to connect to the database. Please try again in a moment."
             : "Invalid email or password"
         )
       } else {
@@ -58,7 +63,23 @@ export default function SignInPage() {
           <CardContent className="space-y-4">
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-                {error}
+                <p>{error}</p>
+                {(error.includes("database") || error.includes("Database")) && (
+                  <p className="mt-2 text-xs text-red-500">
+                    If this persists, the site owner needs to verify the{" "}
+                    <code className="font-mono bg-red-100 px-1 rounded">DATABASE_URL</code>{" "}
+                    in the{" "}
+                    <a
+                      href="https://vercel.com/dashboard"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      Vercel dashboard
+                    </a>
+                    .
+                  </p>
+                )}
               </div>
             )}
             <div className="space-y-2">

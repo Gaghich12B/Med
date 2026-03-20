@@ -85,7 +85,23 @@ export default function SignUpPage() {
           <CardContent className="space-y-4">
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-                {error}
+                <p>{error}</p>
+                {(error.includes("database") || error.includes("Database")) && (
+                  <p className="mt-2 text-xs text-red-500">
+                    If this keeps happening, the site owner needs to set the{" "}
+                    <code className="font-mono bg-red-100 px-1 rounded">DATABASE_URL</code>{" "}
+                    environment variable in the{" "}
+                    <a
+                      href="https://vercel.com/dashboard"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      Vercel dashboard
+                    </a>
+                    .
+                  </p>
+                )}
               </div>
             )}
             <div className="space-y-2">

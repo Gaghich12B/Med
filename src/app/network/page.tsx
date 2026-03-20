@@ -56,12 +56,14 @@ export default async function NetworkPage() {
     connections
       .filter(c => c.status === 'ACCEPTED')
       .flatMap(c => [c.userId, c.connectedId])
+      .filter(id => id !== userId)
   )
 
   const pendingUserIds = new Set(
     connections
       .filter(c => c.status === 'PENDING')
       .flatMap(c => [c.userId, c.connectedId])
+      .filter(id => id !== userId)
   )
 
   return (
