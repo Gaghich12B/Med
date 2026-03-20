@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import { SignOutButton } from "@/components/sign-out-button"
 import { 
   BookOpen, 
   Search, 
@@ -142,9 +143,7 @@ export default async function ReferencesPage() {
             <Link href="/dashboard">
               <Button variant="ghost">Dashboard</Button>
             </Link>
-            <form action="/api/auth/signout" method="POST">
-              <Button variant="ghost" type="submit">Sign Out</Button>
-            </form>
+            <SignOutButton />
           </div>
         </div>
       </nav>

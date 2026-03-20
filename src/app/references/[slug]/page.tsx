@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { SignOutButton } from "@/components/sign-out-button"
 import { 
   BookOpen, 
   ArrowLeft, 
@@ -58,9 +59,7 @@ export default async function ArticleDetailPage({ params }: { params: { slug: st
             <Link href="/references">
               <Button variant="ghost">Back to References</Button>
             </Link>
-            <form action="/api/auth/signout" method="POST">
-              <Button variant="ghost" type="submit">Sign Out</Button>
-            </form>
+            <SignOutButton />
           </div>
         </div>
       </nav>

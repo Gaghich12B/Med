@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Clock, BookOpen, Award, User, ArrowLeft, PlayCircle } from "lucide-react"
+import { SignOutButton } from "@/components/sign-out-button"
 
 export default async function CourseDetailPage({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
@@ -61,9 +62,7 @@ export default async function CourseDetailPage({ params }: { params: { id: strin
             <Link href="/courses">
               <Button variant="ghost">Back to Courses</Button>
             </Link>
-            <form action="/api/auth/signout" method="POST">
-              <Button variant="ghost" type="submit">Sign Out</Button>
-            </form>
+            <SignOutButton />
           </div>
         </div>
       </nav>
