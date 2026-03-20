@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Textarea } from "@/components/ui/textarea"
 import { SignOutButton } from "@/components/sign-out-button"
 import { CreatePost } from "@/components/create-post"
 import { 
@@ -14,7 +15,8 @@ import {
   Heart, 
   Share2,
   GraduationCap,
-  Award
+  Award,
+  Send
 } from "lucide-react"
 
 export default async function FeedPage() {
