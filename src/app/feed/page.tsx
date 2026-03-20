@@ -8,14 +8,15 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
+import { SignOutButton } from "@/components/sign-out-button"
+import { CreatePost } from "@/components/create-post"
 import { 
   MessageSquare, 
   Heart, 
   Share2,
-  Send,
-  BookOpen,
+  GraduationCap,
   Award,
-  GraduationCap
+  Send
 } from "lucide-react"
 
 export default async function FeedPage() {
@@ -92,9 +93,7 @@ export default async function FeedPage() {
             <Link href="/dashboard">
               <Button variant="ghost">Dashboard</Button>
             </Link>
-            <form action="/api/auth/signout" method="POST">
-              <Button variant="ghost" type="submit">Sign Out</Button>
-            </form>
+            <SignOutButton />
           </div>
         </div>
       </nav>
@@ -104,39 +103,7 @@ export default async function FeedPage() {
           {/* Main Feed */}
           <div className="lg:col-span-2 space-y-6">
             {/* Create Post */}
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex gap-4">
-                  <Avatar>
-                    <AvatarFallback>
-                      {session.user?.name?.split(' ').map(n => n[0]).join('') || 'U'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <Textarea
-                      placeholder="Share your thoughts, achievements, or ask a question..."
-                      className="min-h-[100px] resize-none"
-                    />
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="flex gap-2">
-                        <Button variant="ghost" size="sm">
-                          <BookOpen className="h-4 w-4 mr-2" />
-                          Course
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Award className="h-4 w-4 mr-2" />
-                          Certification
-                        </Button>
-                      </div>
-                      <Button size="sm" className="gap-2">
-                        <Send className="h-4 w-4" />
-                        Post
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <CreatePost userName={session.user?.name} />
 
             {/* Posts */}
             {posts.map((post) => (

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { SignOutButton } from "@/components/sign-out-button"
 import { 
   User, 
   MapPin, 
@@ -59,11 +60,23 @@ export default async function ProfilePage() {
     }
   })
 
-  if (!user || !user.profile) {
-    redirect("/dashboard")
+  if (!user) {
+    redirect("/auth/signin")
   }
 
-  const profile = user.profile
+  // Auto-create profile if missing (new users)
+  let profile = user.profile
+  if (!profile) {
+    profile = await prisma.profile.create({
+      data: { userId },
+      include: {
+        education: true,
+        experience: true,
+        skills: true,
+        awards: true,
+      },
+    })
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -78,9 +91,7 @@ export default async function ProfilePage() {
             <Link href="/dashboard">
               <Button variant="ghost">Dashboard</Button>
             </Link>
-            <form action="/api/auth/signout" method="POST">
-              <Button variant="ghost" type="submit">Sign Out</Button>
-            </form>
+            <SignOutButton />
           </div>
         </div>
       </nav>

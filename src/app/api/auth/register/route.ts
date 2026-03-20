@@ -5,6 +5,64 @@ import bcrypt from "bcryptjs"
 
 const PRISMA_UNIQUE_CONSTRAINT_VIOLATION = "P2002"
 
+/** Returns a human-readable 503 response for Prisma init / connection errors. */
+function dbErrorResponse(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error)
+
+  if (message.includes("Environment variable not found: DATABASE_URL")) {
+    return NextResponse.json(
+      {
+        error:
+          "Database not configured. Set DATABASE_URL in your Vercel project's Environment Variables and redeploy.",
+      },
+      { status: 503 }
+    )
+  }
+
+  return NextResponse.json(
+    {
+      error:
+        "Unable to connect to the database. Please try again in a moment — the database may be waking up.",
+    },
+    { status: 503 }
+  )
+}
+
+type CreateUserResult =
+  | { conflict: true }
+  | { conflict: false; user: { id: string; email: string; name: string | null; role: string } }
+
+async function createUser(
+  email: string,
+  password: string,
+  name: string | null,
+  role: string
+): Promise<CreateUserResult> {
+  const existingUser = await prisma.user.findUnique({ where: { email } })
+  if (existingUser) return { conflict: true }
+
+  const hashedPassword = await bcrypt.hash(password, 12)
+
+  const user = await prisma.user.create({
+    data: { email, password: hashedPassword, name: name || null, role: role || "NURSE" },
+  })
+
+  await prisma.profile.create({ data: { userId: user.id } })
+
+  return {
+    conflict: false,
+    user: { id: user.id, email: user.email, name: user.name, role: user.role },
+  }
+}
+
+function isTransientDbError(err: unknown): boolean {
+  return (
+    err instanceof Prisma.PrismaClientInitializationError ||
+    (err instanceof Prisma.PrismaClientKnownRequestError &&
+      (err.code === "P1001" || err.code === "P1002"))
+  )
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
@@ -17,71 +75,76 @@ export async function POST(request: Request) {
       )
     }
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
-    })
+    let result: CreateUserResult | null = null
+    let lastError: unknown = null
 
-    if (existingUser) {
-      return NextResponse.json(
-        { error: "User already exists" },
-        { status: 400 }
-      )
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12)
-
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        name: name || null,
-        role: role || "NURSE"
-      }
-    })
-
-    // Create empty profile
-    await prisma.profile.create({
-      data: {
-        userId: user.id
-      }
-    })
-
-    return NextResponse.json(
-      { 
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role
+    // Attempt the DB operation; on a transient connection error, retry once
+    // after 2 s (gives Neon free-tier computes time to wake from auto-pause).
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        result = await createUser(email, password, name, role)
+        lastError = null
+        break
+      } catch (err) {
+        lastError = err
+        if (isTransientDbError(err) && attempt === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+          continue
         }
-      },
-      { status: 201 }
-    )
-  } catch (error) {
-    console.error("Registration error:", error)
-
-    if (error instanceof Prisma.PrismaClientInitializationError) {
-      return NextResponse.json(
-        { error: "Unable to connect to the database. Please try again later." },
-        { status: 503 }
-      )
+        break
+      }
     }
 
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === PRISMA_UNIQUE_CONSTRAINT_VIOLATION) {
+    if (lastError !== null) {
+      console.error("Registration error:", lastError)
+
+      if (isTransientDbError(lastError)) {
+        return dbErrorResponse(lastError)
+      }
+
+      if (
+        lastError instanceof Prisma.PrismaClientKnownRequestError &&
+        lastError.code === PRISMA_UNIQUE_CONSTRAINT_VIOLATION
+      ) {
         return NextResponse.json(
           { error: "An account with this email already exists." },
           { status: 400 }
         )
       }
+
+      return NextResponse.json({ error: "Something went wrong" }, { status: 500 })
     }
 
-    return NextResponse.json(
-      { error: "Something went wrong" },
-      { status: 500 }
-    )
+    if (result === null) {
+      return NextResponse.json({ error: "Something went wrong" }, { status: 500 })
+    }
+
+    if (result.conflict) {
+      return NextResponse.json(
+        { error: "An account with this email already exists." },
+        { status: 400 }
+      )
+    }
+
+    const { user } = result as Extract<CreateUserResult, { conflict: false }>
+    return NextResponse.json({ user }, { status: 201 })
+  } catch (error) {
+    console.error("Registration error:", error)
+
+    if (error instanceof Prisma.PrismaClientInitializationError) {
+      return dbErrorResponse(error)
+    }
+
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === PRISMA_UNIQUE_CONSTRAINT_VIOLATION
+    ) {
+      return NextResponse.json(
+        { error: "An account with this email already exists." },
+        { status: 400 }
+      )
+    }
+
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 })
   }
 }

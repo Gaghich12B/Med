@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { SignOutButton } from "@/components/sign-out-button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { 
@@ -105,9 +106,7 @@ export default async function DashboardPage() {
               {user.name || user.email}
             </span>
             <Badge variant="outline">{user.role.replace("_", " ")}</Badge>
-            <form action="/api/auth/signout" method="POST">
-              <Button variant="ghost" type="submit">Sign Out</Button>
-            </form>
+            <SignOutButton />
           </div>
         </div>
       </nav>
